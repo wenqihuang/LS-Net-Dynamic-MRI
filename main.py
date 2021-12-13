@@ -28,7 +28,7 @@ if __name__ == "__main__":
     parser.add_argument('--niter', metavar='int', nargs=1, default=['10'], help='number of network iterations')
     parser.add_argument('--acc', metavar='int', nargs=1, default=['16'], help='accelerate rate')
     parser.add_argument('--net', metavar='str', nargs=1, default=['LSNET'], help='L+S Net or S Net')
-    parser.add_argument('--gpu', metavar='int', nargs=1, default=['2'], help='GPU No.')
+    parser.add_argument('--gpu', metavar='int', nargs=1, default=['0'], help='GPU No.')
     parser.add_argument('--data', metavar='str', nargs=1, default=['DYNAMIC_V2_MULTICOIL'], help='dataset name, \
                         DYNAMIC_V2_MULTICOIL for multi-coil dataset, DYNAMIC_V2 for single-coil dataset.')
     parser.add_argument('--learnedSVT', metavar='bool', nargs=1, default=['True'], help='Learned SVT threshold or not')
@@ -69,8 +69,13 @@ if __name__ == "__main__":
         multi_coil = True
         mask_size = '18_192_192'
 
-    mask_file = 'mask/vista_' + mask_size + '_acc_' + str(acc) + '.mat'
-    mask = mat73.loadmat(mask_file)['mask']
+    if dataset_name != 'DUMMY':
+        mask_file = 'mask/vista_' + mask_size + '_acc_' + str(acc) + '.mat'
+        mask = mat73.loadmat(mask_file)['mask']
+    else:
+        multi_coil = True
+        mask_file = 'mask/dummy_mask_8.mat'
+        mask = scio.loadmat(mask_file)['mask']
     mask = tf.cast(tf.constant(mask), tf.complex64)
 
     # prepare dataset
@@ -112,6 +117,11 @@ if __name__ == "__main__":
                 if k0.shape[0] < batch_size:
                     continue
 
+                label_abs = tf.abs(label)
+
+                max_val = tf.reduce_max(label_abs)
+                k0 /= tf.complex(max_val, 0.0)
+                label /= tf.complex(max_val, 0.0)
                 label_abs = tf.abs(label)
 
                 k0 = k0 * mask
