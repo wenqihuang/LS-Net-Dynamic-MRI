@@ -24,6 +24,17 @@ def get_dataset(mode, dataset_name, batch_size, shuffle=False):
         k_dataset = tf.data.Dataset.from_tensor_slices(k)
         label_dataset = tf.data.Dataset.from_tensor_slices(label)
         dataset = tf.data.Dataset.zip((k_dataset, label_dataset))
+    
+    elif dataset_name == 'DUMMY':
+        import h5py
+        data_list = []
+        for i in range(30):
+            data_list.append('create_dummy_data/dummy_dataset.h5')
+        # list_tensor = tf.string(data_list)
+
+        # train_dataset = tf.data.Dataset.list_files('create_dummy_data/*.h5')
+        dataset = tf.data.Dataset.from_tensor_slices(data_list)
+        dataset = dataset.map(wrap_parse_dummy)
 
     if shuffle:
         dataset = dataset.shuffle(buffer_size=50)
@@ -59,3 +70,26 @@ def parse_function(example_proto):
     csm = tf.reshape(csm, parsed_example['csm_shape'])
 
     return k, label, csm
+
+
+def parse_dummy(fname):
+    import h5py
+    fname = fname.numpy()
+    # fname = element.as_string()#.numpy()
+    with h5py.File(fname, mode='r') as hf:
+        #k = np.array(hf.get('kspace'))
+        k = tf.constant(np.array(hf.get('kspace'), dtype=np.complex64))
+        label = tf.constant(np.array(hf.get('label'), dtype=np.complex64))
+        csm = tf.constant(np.array(hf.get('csm'), dtype=np.complex64))
+    return k, label, csm
+
+
+def wrap_parse_dummy(fname): 
+    return tf.py_function(parse_dummy, [fname], [tf.complex64, tf.complex64, tf.complex64])
+
+
+if __name__ == "__main__":
+    dataset = get_dataset('', 'DUMMY', batch_size=1, shuffle=False)
+    for k, label, csm in iter(dataset):
+        print(k.shape, label.shape, csm.shape)
+    
