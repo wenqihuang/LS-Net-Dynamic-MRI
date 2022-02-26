@@ -2,7 +2,7 @@
 
 This repository provides a tensorflow implementation used in our publication
 
-**Huang, Wenqi, et al., [*Deep low-Rank plus sparse network for dynamic MR imaging.*](https://www.sciencedirect.com/science/article/abs/pii/S136184152100236X), Medical Image Analysis 73 (2021): 102190.**
+**Huang, Wenqi, et al., [*Deep low-rank plus sparse network for dynamic MR imaging.*](https://www.sciencedirect.com/science/article/abs/pii/S136184152100236X), Medical Image Analysis 73 (2021): 102190.**
 
 
  If you use this code and provided data, please refer to:
