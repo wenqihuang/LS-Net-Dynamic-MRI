@@ -4,5 +4,5 @@ matplotlib==3.5.1
 numpy==1.22.0
 optopy==0.1.0
 scipy==1.7.3
-tensorflow==2.7.1
+tensorflow==2.7.2
 tqdm==4.62.3
