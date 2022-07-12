@@ -1,7 +1,7 @@
 h5py==3.5.0
 mat73==0.55
 matplotlib==3.5.1
-numpy==1.21.2
+numpy==1.22.0
 optopy==0.1.0
 scipy==1.7.3
 tensorflow==2.7.1
